@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="QR Generator">
+  <rect width="100" height="100" rx="22" fill="#0f6674"/>
+  <g fill="none" stroke="#ffffff" stroke-width="3.2">
+    <rect x="16" y="16" width="16" height="16" rx="3.5"/>
+    <rect x="62" y="16" width="16" height="16" rx="3.5"/>
+    <rect x="16" y="62" width="16" height="16" rx="3.5"/>
+  </g>
+  <g fill="#ffffff">
+    <rect x="21" y="21" width="6" height="6" rx="1.2"/>
+    <rect x="67" y="21" width="6" height="6" rx="1.2"/>
+    <rect x="21" y="67" width="6" height="6" rx="1.2"/>
+    <rect x="62" y="62" width="16" height="16" rx="3.2"/>
+  </g>
+</svg>

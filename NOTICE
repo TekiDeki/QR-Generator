@@ -1,0 +1,6 @@
+QR Generator
+Copyright 2026 Kristian Mario Miskovic (TekiDeki)
+https://github.com/TekiDeki/QR-Generator
+
+src/qr.js is the QR Code Generator for JavaScript by Kazuhiko Arase,
+released under the MIT licence: https://github.com/kazuhikoarase/qrcode-generator

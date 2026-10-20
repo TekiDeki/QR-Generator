@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#0f6674">
+<title>QR Generator · codes that never expire, made in your browser</title>
+<meta name="description" content="Make a QR code for a link, text, WiFi, a contact card, an email, a phone number or an SMS. Vector SVG and print ready PNG, no account, no upload, and the code never expires because no server is involved.">
+<meta name="author" content="Kristian Mario Miskovic (TekiDeki)">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://tekideki.github.io/QR-Generator/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="QR Generator">
+<meta property="og:title" content="QR Generator · codes that never expire">
+<meta property="og:description" content="Link, text, WiFi, contact card. Vector SVG for print, PNG for screens. Nothing is uploaded and no server can switch the code off.">
+<meta property="og:url" content="https://tekideki.github.io/QR-Generator/">
+<meta property="og:image" content="https://tekideki.github.io/QR-Generator/screenshots/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_GB">
+<meta property="og:locale:alternate" content="ro_RO">
+<meta property="og:locale:alternate" content="sr_RS">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="QR Generator · codes that never expire">
+<meta name="twitter:description" content="Make a code in your browser, download SVG or PNG, print a sheet. No account, no upload, no expiry.">
+<meta name="twitter:image" content="https://tekideki.github.io/QR-Generator/screenshots/og.png">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="favicon.ico" sizes="32x32">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="styles.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"QR Generator","applicationCategory":"UtilitiesApplication","operatingSystem":"Any (web browser)","url":"https://tekideki.github.io/QR-Generator/","description":"Creator of permanent QR codes for links, text, WiFi, contacts, email, phone and SMS, with SVG and PNG export and a printable A4 sheet. Nothing is uploaded.","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"author":{"@type":"Person","name":"Kristian Mario Miskovic","alternateName":"TekiDeki"},"license":"https://www.apache.org/licenses/LICENSE-2.0","isAccessibleForFree":true}
+</script>
+<script>
+/* Paint the stored theme before the body is built, so there is no flash of
+ * the wrong colour on a reload. */
+(function () {
+  try {
+    var saved = localStorage.getItem('qr-generator.theme');
+    var dark = saved === 'dark' || (!saved && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  } catch (e) {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+}());
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main" data-i18n="skipToContent">Skip to content</a>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#main">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32"><rect x="3" y="3" width="10" height="10" rx="2.4" fill="none" stroke="currentColor" stroke-width="2.4"/><rect x="19" y="3" width="10" height="10" rx="2.4" fill="none" stroke="currentColor" stroke-width="2.4"/><rect x="3" y="19" width="10" height="10" rx="2.4" fill="none" stroke="currentColor" stroke-width="2.4"/><rect x="7.2" y="7.2" width="1.8" height="1.8" fill="currentColor"/><rect x="23.2" y="7.2" width="1.8" height="1.8" fill="currentColor"/><rect x="7.2" y="23.2" width="1.8" height="1.8" fill="currentColor"/><rect x="19" y="19" width="4" height="4" fill="currentColor"/><rect x="25" y="19" width="4" height="4" fill="currentColor"/><rect x="19" y="25" width="4" height="4" fill="currentColor"/></svg>
+      </span>
+      <span class="brand-text">
+        <span>QR Generator</span>
+        <span class="brand-tagline" data-i18n="tagline">Codes that never expire.</span>
+      </span>
+    </a>
+
+    <div class="topbar-actions">
+      <button type="button" class="icon-btn" id="undoBtn" disabled data-i18n-title="undoTip" title="Undo the last change">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>
+        <span data-i18n="undo">Undo</span>
+      </button>
+      <button type="button" class="icon-btn" id="themeBtn" data-i18n-title="themeToggle" title="Switch light or dark theme">
+        <svg class="theme-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.8 6.8 0 0 0 9.8 9.8Z"/></svg>
+        <svg class="theme-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></svg>
+        <span data-i18n="theme">Theme</span>
+      </button>
+      <label class="sr-only" for="langSelect" data-i18n="language">Language</label>
+      <select id="langSelect" aria-label="Language" data-i18n-aria-label="language">
+        <option value="en">English</option>
+        <option value="ro">Română</option>
+        <option value="sr-latn">Srpski</option>
+        <option value="sr-cyrl">Српски</option>
+      </select>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+
+  <section class="intro">
+    <h1 data-i18n="h1">A code that never expires</h1>
+    <p class="lede" data-i18n="lede">Type a link, a network name or a phone number and take the code away as SVG for print or PNG for screens. Nothing is uploaded, so nothing can switch it off later.</p>
+    <ul class="claims">
+      <li data-i18n="claimNoUpload">No upload</li>
+      <li data-i18n="claimNoAccount">No account</li>
+      <li data-i18n="claimPrint">SVG ready for print</li>
+      <li data-i18n="claimOffline">Works offline</li>
+    </ul>
+  </section>
+
+  <div class="columns">
+
+    <div class="column">
+
+      <section class="card" aria-labelledby="types-h">
+        <h2 id="types-h" data-i18n="typesTitle">What goes in the code</h2>
+        <div class="types" role="group" aria-label="Code type" data-i18n-aria-label="typesTitle">
+          <button type="button" class="chip" data-type="url" aria-pressed="true">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1.5 1.5"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1.5-1.5"/></svg>
+            <span data-i18n="typeUrl">Link</span>
+          </button>
+          <button type="button" class="chip" data-type="text" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h12M4 18h8"/></svg>
+            <span data-i18n="typeText">Text</span>
+          </button>
+          <button type="button" class="chip" data-type="wifi" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 8.8a15 15 0 0 1 20 0"/><path d="M5.5 12.6a10 10 0 0 1 13 0"/><path d="M9 16.4a5 5 0 0 1 6 0"/><circle cx="12" cy="20" r="1.2" fill="currentColor" stroke="none"/></svg>
+            <span data-i18n="typeWifi">WiFi</span>
+          </button>
+          <button type="button" class="chip" data-type="contact" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="12" cy="10.5" r="2.6"/><path d="M7.5 17.5c.8-2 2.4-3 4.5-3s3.7 1 4.5 3"/></svg>
+            <span data-i18n="typeContact">Contact</span>
+          </button>
+          <button type="button" class="chip" data-type="email" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg>
+            <span data-i18n="typeEmail">Email</span>
+          </button>
+          <button type="button" class="chip" data-type="phone" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h3l2 5-2.5 1.5a12 12 0 0 0 6 6L16 13l5 2v3a2 2 0 0 1-2.2 2A17 17 0 0 1 4 5.2 2 2 0 0 1 6 3Z"/></svg>
+            <span data-i18n="typePhone">Phone</span>
+          </button>
+          <button type="button" class="chip" data-type="sms" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-8 8H8l-5 3 1.4-4.6A8 8 0 1 1 21 12Z"/></svg>
+            <span data-i18n="typeSms">SMS</span>
+          </button>
+        </div>
+
+        <div class="fields" data-panel="url">
+          <div class="field">
+            <label for="url" data-i18n="urlLabel">Address</label>
+            <input id="url" type="text" inputmode="url" spellcheck="false" autocomplete="off" placeholder="freehtml.dev" data-i18n-placeholder="urlPlaceholder">
+            <p class="hint" data-i18n="urlHint">If you leave out the start, https:// is added for you.</p>
+          </div>
+        </div>
+
+        <div class="fields" data-panel="text" hidden>
+          <div class="field">
+            <label for="text" data-i18n="textLabel">Text</label>
+            <textarea id="text" data-i18n-placeholder="textPlaceholder" placeholder="Anything a scanner should show as plain text"></textarea>
+            <p class="hint" data-i18n="textHint">Long text needs a denser code, and a dense code is harder to scan from far away.</p>
+          </div>
+        </div>
+
+        <div class="fields" data-panel="wifi" hidden>
+          <div class="field">
+            <label for="ssid" data-i18n="ssidLabel">Network name</label>
+            <input id="ssid" type="text" spellcheck="false" autocomplete="off">
+          </div>
+          <div class="row2">
+            <div class="field">
+              <label for="wifiPass" data-i18n="passwordLabel">Password</label>
+              <input id="wifiPass" type="text" spellcheck="false" autocomplete="off">
+            </div>
+            <div class="field">
+              <label for="security" data-i18n="securityLabel">Security</label>
+              <select id="security">
+                <option value="WPA" data-i18n="secWpa">WPA / WPA2</option>
+                <option value="WEP" data-i18n="secWep">WEP</option>
+                <option value="nopass" data-i18n="secNone">Open network</option>
+              </select>
+            </div>
+          </div>
+          <label class="check"><input type="checkbox" id="hiddenNet"> <span data-i18n="hiddenLabel">The network name is hidden</span></label>
+        </div>
+
+        <div class="fields" data-panel="contact" hidden>
+          <div class="row2">
+            <div class="field">
+              <label for="firstName" data-i18n="firstNameLabel">First name</label>
+              <input id="firstName" type="text" autocomplete="off">
+            </div>
+            <div class="field">
+              <label for="lastName" data-i18n="lastNameLabel">Last name</label>
+              <input id="lastName" type="text" autocomplete="off">
+            </div>
+          </div>
+          <div class="field">
+            <label for="org" data-i18n="orgLabel">Company</label>
+            <input id="org" type="text" autocomplete="off">
+          </div>
+          <div class="row2">
+            <div class="field">
+              <label for="contactPhone" data-i18n="contactPhoneLabel">Phone</label>
+              <input id="contactPhone" type="tel" inputmode="tel" autocomplete="off" placeholder="+381 60 123 4567">
+            </div>
+            <div class="field">
+              <label for="contactEmail" data-i18n="contactEmailLabel">Email</label>
+              <input id="contactEmail" type="email" autocomplete="off">
+            </div>
+          </div>
+          <div class="field">
+            <label for="website" data-i18n="websiteLabel">Website</label>
+            <input id="website" type="text" inputmode="url" spellcheck="false" autocomplete="off" placeholder="freehtml.dev">
+          </div>
+        </div>
+
+        <div class="fields" data-panel="email" hidden>
+          <div class="field">
+            <label for="mailTo" data-i18n="mailToLabel">Address</label>
+            <input id="mailTo" type="email" autocomplete="off" placeholder="name@example.com">
+          </div>
+          <div class="field">
+            <label for="subject" data-i18n="subjectLabel">Subject</label>
+            <input id="subject" type="text" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="mailBody" data-i18n="mailBodyLabel">Message</label>
+            <textarea id="mailBody"></textarea>
+          </div>
+        </div>
+
+        <div class="fields" data-panel="phone" hidden>
+          <div class="field">
+            <label for="phoneNumber" data-i18n="phoneLabel">Number</label>
+            <input id="phoneNumber" type="tel" inputmode="tel" autocomplete="off" placeholder="+381 60 123 4567">
+            <p class="hint" data-i18n="phoneHint">Spaces and dashes are dropped. Keep the plus for an international number.</p>
+          </div>
+        </div>
+
+        <div class="fields" data-panel="sms" hidden>
+          <div class="field">
+            <label for="smsNumber" data-i18n="smsNumberLabel">Number</label>
+            <input id="smsNumber" type="tel" inputmode="tel" autocomplete="off" placeholder="+381 60 123 4567">
+          </div>
+          <div class="field">
+            <label for="smsText" data-i18n="smsTextLabel">Message</label>
+            <textarea id="smsText"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="design-h">
+        <h2 id="design-h" data-i18n="designTitle">How it looks</h2>
+        <div class="opts">
+
+          <div class="opt">
+            <span data-i18n="colorsLabel">Colours</span>
+            <div class="colors">
+              <input type="color" id="fgColor" value="#0a1d23" aria-label="Code colour" data-i18n-aria-label="fgLabel">
+              <input type="color" id="bgColor" value="#ffffff" aria-label="Background colour" data-i18n-aria-label="bgLabel">
+              <div class="swatches" id="swatches" role="group" aria-label="Colour presets" data-i18n-aria-label="swatchLabel"></div>
+            </div>
+          </div>
+
+          <div class="opt">
+            <span data-i18n="shapeLabel">Shape of the squares</span>
+            <div class="seg" id="shapeSeg" role="group" aria-label="Shape" data-i18n-aria-label="shapeLabel">
+              <button type="button" data-value="square" aria-pressed="true" data-i18n="shapeSquare">Square</button>
+              <button type="button" data-value="rounded" aria-pressed="false" data-i18n="shapeRounded">Rounded</button>
+              <button type="button" data-value="dots" aria-pressed="false" data-i18n="shapeDots">Dots</button>
+            </div>
+          </div>
+
+          <div class="opt">
+            <span data-i18n="eyesLabel">The three corners</span>
+            <div class="seg" id="eyeSeg" role="group" aria-label="Corners" data-i18n-aria-label="eyesLabel">
+              <button type="button" data-value="square" aria-pressed="true" data-i18n="eyeSquare">Square</button>
+              <button type="button" data-value="rounded" aria-pressed="false" data-i18n="eyeRounded">Rounded</button>
+              <button type="button" data-value="circle" aria-pressed="false" data-i18n="eyeCircle">Circle</button>
+            </div>
+          </div>
+
+          <div class="opt">
+            <span data-i18n="eccLabel">Damage tolerance</span>
+            <div class="seg" id="eccSeg" role="group" aria-label="Damage tolerance" data-i18n-aria-label="eccLabel">
+              <button type="button" data-value="L" aria-pressed="false" data-i18n="eccLow">Low</button>
+              <button type="button" data-value="M" aria-pressed="true" data-i18n="eccMedium">Medium</button>
+              <button type="button" data-value="Q" aria-pressed="false" data-i18n="eccQuartile">High</button>
+              <button type="button" data-value="H" aria-pressed="false" data-i18n="eccHigh">Highest</button>
+            </div>
+            <p class="hint" data-i18n="eccHint">More tolerance means a denser code that still scans with a logo over it or a scratch across it.</p>
+          </div>
+
+          <div class="opt">
+            <span data-i18n="logoLabel">Logo in the middle</span>
+            <div class="logo-row">
+              <input type="file" id="logoInput" accept="image/png,image/jpeg,image/svg+xml,image/webp" class="sr-only">
+              <button type="button" class="btn" id="logoPick" data-i18n="logoPick">Choose a file</button>
+              <button type="button" class="btn" id="logoRemove" hidden data-i18n="logoRemove">Remove</button>
+              <img class="logo-thumb" id="logoThumb" alt="" hidden>
+            </div>
+            <p class="hint" data-i18n="logoHint">The file is read by your browser. It is drawn into the code, never uploaded.</p>
+          </div>
+
+          <div class="opt">
+            <span data-i18n="pngSizeLabel">PNG size</span>
+            <div class="seg" id="pngSeg" role="group" aria-label="PNG size">
+              <button type="button" data-value="512" aria-pressed="false">512 px</button>
+              <button type="button" data-value="1024" aria-pressed="true">1024 px</button>
+              <button type="button" data-value="2048" aria-pressed="false">2048 px</button>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="export">
+          <button type="button" class="btn primary" id="svgBtn">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 19h16"/></svg>
+            <span data-i18n="downloadSvg">SVG</span>
+          </button>
+          <button type="button" class="btn primary" id="pngBtn">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="m4 17 5-4 4 3 3-2 4 3"/></svg>
+            <span data-i18n="downloadPng">PNG</span>
+          </button>
+          <button type="button" class="btn" id="copyBtn">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M15 5.5A2.5 2.5 0 0 0 12.5 3H6.5A2.5 2.5 0 0 0 4 5.5v6A2.5 2.5 0 0 0 6.5 14"/></svg>
+            <span data-i18n="copyPayload">Copy the text</span>
+          </button>
+          <button type="button" class="btn" id="printBtn">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2.5"/><path d="M6 17h12v4H6z"/></svg>
+            <span data-i18n="printOne">Print</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="card batch" aria-labelledby="sheet-h">
+        <h2 id="sheet-h" data-i18n="sheetTitle">A whole sheet at once</h2>
+        <p class="hint" data-i18n="sheetHint">One address per line. Each line becomes a code, laid out on an A4 sheet with its own caption, ready to print and cut.</p>
+        <div class="field" style="margin-top:12px">
+          <textarea id="batchList" class="batch" data-i18n-placeholder="sheetPlaceholder" placeholder="freehtml.dev&#10;freehtml.dev/pdf&#10;freehtml.dev/sign"></textarea>
+        </div>
+        <div class="row2" style="margin-top:12px">
+          <div class="field">
+            <label for="columns" data-i18n="sheetColumns">Columns</label>
+            <select id="columns">
+              <option value="2" data-i18n="cols2">2</option>
+              <option value="3" selected data-i18n="cols3">3</option>
+              <option value="4" data-i18n="cols4">4</option>
+            </select>
+          </div>
+          <label class="check" style="align-self:end;padding-bottom:10px"><input type="checkbox" id="sheetCaption" checked> <span data-i18n="sheetCaption">Caption under each code</span></label>
+        </div>
+        <div class="export">
+          <button type="button" class="btn wide" id="sheetBtn">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2.5"/><path d="M9 3v18M3 9h18"/></svg>
+            <span data-i18n="sheetGenerate">Make the sheet</span>
+          </button>
+        </div>
+      </section>
+
+    </div>
+
+    <div class="column">
+      <section class="card preview-card" aria-labelledby="preview-h">
+        <h2 id="preview-h" data-i18n="previewTitle">The code</h2>
+        <div class="stage" id="stage">
+          <p class="empty" data-i18n="emptyPreview">Fill in a field and the code appears here.</p>
+        </div>
+        <div class="meta" id="meta"></div>
+        <div class="payload" id="payloadText" aria-live="polite"></div>
+      </section>
+    </div>
+
+  </div>
+
+  <p class="hint" style="margin-top:26px" data-i18n="footerPrivacy">Nothing you type here leaves this tab. The page makes no network request, and the code is drawn by your own browser.</p>
+  <p class="hint" data-i18n="footerMark">The words QR Code are a registered trademark of DENSO WAVE INCORPORATED.</p>
+</main>
+
+<div class="print-only" id="printArea"></div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="qr.js"></script>
+<script src="payload.js"></script>
+<script src="i18n/locales.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
