@@ -219,7 +219,16 @@ def run_checks(page, base: str, console_errors: list[str], page_errors: list[str
     page.wait_for_timeout(700)
     check(page.locator("#peek").is_hidden(), "the strip steps aside once the full preview is on screen")
     page.set_viewport_size({"width": 1280, "height": 900})
-    page.wait_for_timeout(250)
+    page.wait_for_timeout(400)
+    page.evaluate("() => window.scrollTo(0, 0)")
+    check(page.locator("#peek").is_hidden(), "a wide window keeps the strip away")
+
+    # 9c. and back: a window that narrows brings the strip back without a reload
+    page.set_viewport_size({"width": 390, "height": 844})
+    page.wait_for_timeout(400)
+    check(page.locator("#peek").is_visible(), "narrowing the window brings the strip back")
+    page.set_viewport_size({"width": 1280, "height": 900})
+    page.wait_for_timeout(400)
     page.evaluate("() => window.scrollTo(0, 0)")
 
     # 10. language, in all four

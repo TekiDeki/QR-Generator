@@ -58,6 +58,7 @@
   var saveTimer = null;
   var pushTimer = null;
   var lastSaved = '{}';
+  var lastPeek = false;
 
   /* -------------------------------------------------------------- utilities */
 
@@ -390,6 +391,7 @@
       el.meta.innerHTML = '';
       lastQr = null;
       if (el.peek) el.peek.hidden = true;
+      lastPeek = false;
       return;
     }
 
@@ -450,6 +452,7 @@
    * full preview is on screen. */
   function paintPeek(grid, total, options, text) {
     if (!el.peek) return;
+    lastPeek = true;
     el.peekArt.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + total + ' ' + total + '" aria-hidden="true">' +
       svgBody(grid, options) + '</svg>';
     var shown = text.length > 46 ? text.slice(0, 46) + ' ...' : text;
@@ -922,6 +925,11 @@
       });
     }
     window.addEventListener('scroll', function () { if (el.peek && !el.peek.hidden) el.peek.hidden = previewInView(); }, { passive: true });
+    // A window that changes width changes where the preview sits, so the strip
+    // has to decide again whether it is needed.
+    window.addEventListener('resize', function () {
+      if (el.peek && lastPeek) el.peek.hidden = previewInView();
+    }, { passive: true });
     $('printBtn').addEventListener('click', printOne);
     $('sheetBtn').addEventListener('click', makeSheet);
     $('copyBtn').addEventListener('click', function () {
