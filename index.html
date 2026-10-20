@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-version="1.0.0">
+<html lang="en" data-version="1.0.1">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -3958,6 +3958,14 @@ window.TD_LOCALES = {
     });
   }
 
+  function registerWorker() {
+    if (!('serviceWorker' in navigator)) return;
+    if (!/^https?:$/.test(window.location.protocol)) return;
+    try {
+      navigator.serviceWorker.register('sw.js').catch(function () { /* offline is optional */ });
+    } catch (error) { /* older browsers */ }
+  }
+
   function init() {
     el = {
       toast: $('toast'),
@@ -4038,12 +4046,13 @@ window.TD_LOCALES = {
     paintControls();
     paintUndo();
     applyLang(state.language);
+    registerWorker();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 }());
 </script>
-<!-- QR Generator 1.0.0 · single file build -->
+<!-- QR Generator 1.0.1 · single file build -->
 </body>
 </html>

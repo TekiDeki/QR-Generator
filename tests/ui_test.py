@@ -236,6 +236,11 @@ def run_checks(page, base: str, console_errors: list[str], page_errors: list[str
     check(page.input_value("#url") == "freehtml.dev/kept", "the address survives a reload")
     check(page.locator("#stage svg").count() == 1, "the code is rebuilt after the reload")
 
+    # 13b. the offline shell is registered
+    page.wait_for_timeout(700)
+    workers = page.evaluate("() => navigator.serviceWorker.getRegistrations().then(r => r.length)")
+    check(workers >= 1, "the service worker is registered, so the app opens offline")
+
     # 14. the page never asks the network for anything
     requests = page.evaluate("() => performance.getEntriesByType('resource').map(e => e.name)")
     external = [r for r in requests if not r.startswith(base) and not r.startswith("data:") and not r.startswith("blob:")]

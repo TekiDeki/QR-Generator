@@ -796,6 +796,14 @@
     });
   }
 
+  function registerWorker() {
+    if (!('serviceWorker' in navigator)) return;
+    if (!/^https?:$/.test(window.location.protocol)) return;
+    try {
+      navigator.serviceWorker.register('sw.js').catch(function () { /* offline is optional */ });
+    } catch (error) { /* older browsers */ }
+  }
+
   function init() {
     el = {
       toast: $('toast'),
@@ -876,6 +884,7 @@
     paintControls();
     paintUndo();
     applyLang(state.language);
+    registerWorker();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
