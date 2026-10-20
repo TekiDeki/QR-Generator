@@ -105,7 +105,10 @@
     "copyFailed": "Could not copy. Select the text by hand.",
     "noCanvas": "This browser cannot draw the image.",
     "footerPrivacy": "Nothing you type here leaves this tab. The page makes no network request, and the code is drawn by your own browser.",
-    "footerMark": "The words QR Code are a registered trademark of DENSO WAVE INCORPORATED."
+    "footerMark": "The words QR Code are a registered trademark of DENSO WAVE INCORPORATED.",
+    "sheetPreview": "What the printer gets",
+    "sheetMore": "An A4 page holds {n} codes. The rest wait for the next page.",
+    "peekLabel": "See the code"
   },
   "ro": {
     "pageTitle": "QR Generator · coduri care nu expiră niciodată, făcute în browser",
@@ -213,7 +216,10 @@
     "copyFailed": "Nu s-a putut copia. Selectează textul cu mâna.",
     "noCanvas": "Browserul acesta nu poate desena imaginea.",
     "footerPrivacy": "Nimic din ce scrii aici nu pleacă din filă. Pagina nu face nicio cerere de rețea, iar codul este desenat de browserul tău.",
-    "footerMark": "Cuvintele QR Code sunt marcă înregistrată a DENSO WAVE INCORPORATED."
+    "footerMark": "Cuvintele QR Code sunt marcă înregistrată a DENSO WAVE INCORPORATED.",
+    "sheetPreview": "Ce primește imprimanta",
+    "sheetMore": "O pagină A4 ține {n} coduri. Restul așteaptă pagina următoare.",
+    "peekLabel": "Vezi codul"
   },
   "sr-latn": {
     "pageTitle": "QR Generator · kodovi koji nikad ne ističu, napravljeni u pregledaču",
@@ -321,6 +327,9 @@
     "copyFailed": "Kopiranje nije uspelo. Označi tekst ručno.",
     "noCanvas": "Ovaj pregledač ne može da nacrta sliku.",
     "footerPrivacy": "Ništa što ovde napišeš ne napušta ovaj tab. Stranica ne šalje nijedan zahtev, a kod crta tvoj pregledač.",
-    "footerMark": "Reči QR Code su registrovani znak kompanije DENSO WAVE INCORPORATED."
+    "footerMark": "Reči QR Code su registrovani znak kompanije DENSO WAVE INCORPORATED.",
+    "sheetPreview": "Šta dobija štampač",
+    "sheetMore": "A4 strana prima {n} kodova. Ostali čekaju sledeću stranu.",
+    "peekLabel": "Vidi kod"
   }
 }

@@ -389,6 +389,7 @@
       stage.innerHTML = '<p class="empty">' + escapeHtml(t('emptyPreview')) + '</p>';
       el.meta.innerHTML = '';
       lastQr = null;
+      if (el.peek) el.peek.hidden = true;
       return;
     }
 
@@ -399,6 +400,7 @@
       stage.innerHTML = '<p class="empty">' + escapeHtml(t('tooLong')) + '</p>';
       el.meta.innerHTML = '<span class="pill bad">' + escapeHtml(t('tooLongPill')) + '</span>';
       lastQr = null;
+      if (el.peek) el.peek.hidden = true;
       return;
     }
 
@@ -421,6 +423,7 @@
       svgBody(grid, options) + '</svg>';
 
     paintMeta(text, n);
+    paintPeek(grid, total, options, text);
   }
 
   function paintMeta(text, n) {
@@ -440,6 +443,24 @@
       pills.push('<span class="pill warn">' + escapeHtml(t('denseWarn')) + '</span>');
     }
     el.meta.innerHTML = pills.join('');
+  }
+
+  /* The small code that rides along the bottom of a phone screen. It is the
+   * same matrix as the big one, drawn at 52 px, and it goes away when the
+   * full preview is on screen. */
+  function paintPeek(grid, total, options, text) {
+    if (!el.peek) return;
+    el.peekArt.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + total + ' ' + total + '" aria-hidden="true">' +
+      svgBody(grid, options) + '</svg>';
+    var shown = text.length > 46 ? text.slice(0, 46) + ' ...' : text;
+    el.peekText.textContent = shown;
+    el.peek.hidden = previewInView();
+  }
+
+  function previewInView() {
+    if (!el.previewCard || !('IntersectionObserver' in window)) return false;
+    var box = el.previewCard.getBoundingClientRect();
+    return box.top < window.innerHeight - 40 && box.bottom > 0;
   }
 
   function escapeHtml(value) {
@@ -651,15 +672,41 @@
     window.print();
   }
 
-  function makeSheet() {
-    var raw = el.batchList.value.split(/\r?\n/);
+  /* The sheet, on screen, before the printer sees it. Showing the page is the
+   * honest version of a print button: what you see is what comes out. */
+  function sheetItems() {
     var items = [];
-    raw.forEach(function (line) {
+    String(el.batchList.value).split(/\r?\n/).forEach(function (line) {
       var value = line.trim();
       if (!value) return;
-      var built = payloadApi.normalizeUrl(value);
-      items.push({ value: built, caption: value });
+      items.push({ value: payloadApi.normalizeUrl(value), caption: value });
     });
+    return items;
+  }
+
+  function paintSheetPreview() {
+    if (!el.sheetFrame) return;
+    var items = sheetItems();
+    if (!items.length) {
+      el.sheetFrame.hidden = true;
+      el.sheetPreview.innerHTML = '';
+      return;
+    }
+    var columns = parseInt(state.columns, 10) || 3;
+    var perPage = columns * 8;
+    el.sheetFrame.hidden = false;
+    el.sheetPreview.innerHTML = a4Sheet(items.slice(0, perPage), columns, state.sheetCaption);
+    if (items.length > perPage) {
+      el.sheetMore.hidden = false;
+      el.sheetMore.textContent = t('sheetMore', { n: perPage });
+    } else {
+      el.sheetMore.hidden = true;
+      el.sheetMore.textContent = '';
+    }
+  }
+
+  function makeSheet() {
+    var items = sheetItems();
     if (!items.length) { toast(t('sheetEmpty')); return; }
     var columns = parseInt(state.columns, 10) || 3;
     el.printArea.innerHTML = a4Sheet(items.slice(0, columns * 8), columns, state.sheetCaption);
@@ -719,10 +766,17 @@
     el.columns.addEventListener('change', function () {
       state.columns = el.columns.value;
       save();
+      paintSheetPreview();
     });
     el.sheetCaption.addEventListener('change', function () {
       state.sheetCaption = el.sheetCaption.checked;
       save();
+      paintSheetPreview();
+    });
+    var sheetTimer = null;
+    el.batchList.addEventListener('input', function () {
+      clearTimeout(sheetTimer);
+      sheetTimer = setTimeout(paintSheetPreview, 260);
     });
   }
 
@@ -827,7 +881,14 @@
       logoRemove: $('logoRemove'),
       logoThumb: $('logoThumb'),
       batchList: $('batchList'),
-      printArea: $('printArea')
+      printArea: $('printArea'),
+      peek: $('peek'),
+      peekArt: $('peekArt'),
+      peekText: $('peekText'),
+      previewCard: document.querySelector('.preview-card'),
+      sheetFrame: $('sheetFrame'),
+      sheetPreview: $('sheetPreview'),
+      sheetMore: $('sheetMore')
     };
 
     load();
@@ -855,6 +916,12 @@
 
     $('svgBtn').addEventListener('click', exportSvg);
     $('pngBtn').addEventListener('click', exportPng);
+    if (el.peek) {
+      el.peek.addEventListener('click', function () {
+        if (el.previewCard) el.previewCard.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      });
+    }
+    window.addEventListener('scroll', function () { if (el.peek && !el.peek.hidden) el.peek.hidden = previewInView(); }, { passive: true });
     $('printBtn').addEventListener('click', printOne);
     $('sheetBtn').addEventListener('click', makeSheet);
     $('copyBtn').addEventListener('click', function () {
@@ -884,6 +951,7 @@
     paintControls();
     paintUndo();
     applyLang(state.language);
+    paintSheetPreview();
     registerWorker();
   }
 

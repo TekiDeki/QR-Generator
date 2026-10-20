@@ -68,6 +68,14 @@ def main() -> None:
         fill(page, base)
         page.screenshot(path=str(OUT / "dark.png"))
 
+        phone = browser.new_context(viewport={"width": 390, "height": 844}, device_scale_factor=3,
+                                     is_mobile=True, has_touch=True).new_page()
+        phone.goto(base + "/", wait_until="load")
+        phone.evaluate("() => window.scrollTo(0, 0)")
+        phone.fill("#url", "freehtml.dev/sign")
+        phone.wait_for_timeout(500)
+        phone.screenshot(path=str(OUT / "phone.png"))
+
         card = browser.new_context(viewport={"width": 1200, "height": 630}, device_scale_factor=1).new_page()
         card.goto(base + "/", wait_until="load")
         card.evaluate("""() => {

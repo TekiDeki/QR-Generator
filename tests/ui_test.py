@@ -184,9 +184,15 @@ def run_checks(page, base: str, console_errors: list[str], page_errors: list[str
             check(dark > 500, "the PNG has dark modules")
         page.click('#pngSeg button[data-value="1024"]')
 
-    # 9. the printable sheet
+    # 9. the printable sheet, and the preview that shows it before printing
     page.evaluate("() => { window.print = () => { window.__printed = true; }; }")
     page.fill("#batchList", "freehtml.dev\nfreehtml.dev/pdf\nfreehtml.dev/sign")
+    page.wait_for_timeout(500)
+    check(page.locator("#sheetFrame").is_visible(), "the sheet is drawn on screen as soon as there are lines")
+    check(page.locator("#sheetPreview svg").count() == 1, "the preview is one A4 page")
+    check(page.locator("#sheetPreview g").count() == 3, "the preview holds every address")
+    check(page.locator("#sheetPreview text").count() == 3, "the preview shows the captions")
+    check(page.locator("#sheetMore").is_hidden(), "nothing is left over for a second page")
     page.click("#sheetBtn")
     page.wait_for_timeout(400)
     printed = page.evaluate("() => window.__printed === true")
@@ -197,6 +203,24 @@ def run_checks(page, base: str, console_errors: list[str], page_errors: list[str
     check(codes == 3, f"three addresses give three codes, got {codes}")
     captions = page.locator("#printArea text").count()
     check(captions == 3, f"each code has a caption, got {captions}")
+
+    # 9b. the small code on a phone, while the full preview is far below
+    page.set_viewport_size({"width": 390, "height": 844})
+    page.wait_for_timeout(250)
+    page.click('.chip[data-type="url"]')
+    page.fill("#url", "")
+    page.wait_for_timeout(200)
+    check(page.locator("#peek").is_hidden(), "an empty form keeps the strip away")
+    page.fill("#url", "freehtml.dev")
+    page.wait_for_timeout(250)
+    check(page.locator("#peek").is_visible(), "the strip appears while typing on a phone")
+    check(page.locator("#peekArt svg").count() == 1, "the strip carries the real code")
+    page.click("#peek")
+    page.wait_for_timeout(700)
+    check(page.locator("#peek").is_hidden(), "the strip steps aside once the full preview is on screen")
+    page.set_viewport_size({"width": 1280, "height": 900})
+    page.wait_for_timeout(250)
+    page.evaluate("() => window.scrollTo(0, 0)")
 
     # 10. language, in all four
     expected = {

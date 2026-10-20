@@ -339,6 +339,11 @@
           </div>
           <label class="check" style="align-self:end;padding-bottom:10px"><input type="checkbox" id="sheetCaption" checked> <span data-i18n="sheetCaption">Caption under each code</span></label>
         </div>
+        <div class="sheet-frame" id="sheetFrame" hidden>
+          <p class="hint sheet-note" data-i18n="sheetPreview">What the printer gets</p>
+          <div class="sheet-paper" id="sheetPreview"></div>
+          <p class="hint sheet-more" id="sheetMore" hidden></p>
+        </div>
         <div class="export">
           <button type="button" class="btn wide" id="sheetBtn">
             <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2.5"/><path d="M9 3v18M3 9h18"/></svg>
@@ -365,6 +370,11 @@
   <p class="hint" style="margin-top:26px" data-i18n="footerPrivacy">Nothing you type here leaves this tab. The page makes no network request, and the code is drawn by your own browser.</p>
   <p class="hint" data-i18n="footerMark">The words QR Code are a registered trademark of DENSO WAVE INCORPORATED.</p>
 </main>
+
+<button type="button" class="peek" id="peek" hidden>
+  <span class="peek-art" id="peekArt" aria-hidden="true"></span>
+  <span class="peek-text" id="peekText" data-i18n="peekLabel">See the code</span>
+</button>
 
 <div class="print-only" id="printArea"></div>
 

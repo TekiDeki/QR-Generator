@@ -107,6 +107,17 @@ a { color: var(--accent); }
   max-width: 1180px; margin: 0 auto; padding: 10px 20px;
   display: flex; align-items: center; gap: 14px;
 }
+@media (max-width: 560px) {
+  .topbar-inner { padding: 8px 14px; gap: 8px; }
+  .brand { gap: 9px; min-width: 0; }
+  .brand-mark { width: 34px; height: 34px; border-radius: 9px; }
+  .brand-mark svg { width: 21px; height: 21px; }
+  .brand-text > span:first-child { font-size: 15px; white-space: nowrap; }
+  .brand-tagline { display: none; }
+  .topbar-actions { gap: 6px; }
+  .icon-btn { min-height: 38px; padding: 0 9px; }
+  select { min-height: 38px; padding: 0 28px 0 10px; font-size: 14px; }
+}
 .brand { display: flex; align-items: center; gap: 11px; text-decoration: none; color: inherit; }
 .brand-mark {
   width: 38px; height: 38px; border-radius: 11px;
@@ -297,6 +308,46 @@ select {
 /* ------------------------------------------------------------------- print */
 
 .print-only { display: none; }
+
+
+/* ------------------------------------------------------- sheet preview */
+
+.sheet-frame { margin-top: 16px; }
+.sheet-note { margin-bottom: 8px; }
+.sheet-paper {
+  background: #fff; border: 1px solid var(--line); border-radius: 10px;
+  padding: 8px; box-shadow: var(--shadow); overflow: hidden;
+}
+.sheet-paper svg { display: block; width: 100%; height: auto; }
+.sheet-more { margin-top: 8px; color: var(--warn); }
+
+/* ------------------------------------------------------- the small code */
+
+/* On a phone the full preview sits under the whole form, so the code would be
+ * off screen exactly while it is being typed. This strip keeps it in view. */
+.peek { display: none; }
+@media (max-width: 939px) {
+  .peek {
+    position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 40;
+    display: flex; align-items: center; gap: 12px;
+    padding: 8px 14px 8px 8px; min-height: 64px;
+    background: var(--panel); border: 1px solid var(--line-strong);
+    border-radius: 16px; box-shadow: 0 10px 30px rgba(9, 30, 38, 0.22);
+    color: var(--ink); text-align: left; cursor: pointer;
+  }
+  .peek[hidden] { display: none; }
+  .peek-art {
+    width: 52px; height: 52px; flex: none; display: grid; place-items: center;
+    background: #fff; border-radius: 10px; padding: 4px;
+  }
+  .peek-art svg { width: 100%; height: 100%; display: block; }
+  .peek-text {
+    font-size: 13.5px; line-height: 1.35; color: var(--ink-soft);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;
+  }
+  body { padding-bottom: 88px; }
+}
+@media print { .peek { display: none !important; } }
 
 @media print {
   body { background: #fff; }

@@ -7,6 +7,10 @@
 
 ![QR Generator on a desktop](screenshots/desktop.png)
 
+On a phone the code rides along the bottom of the screen while you type, so you see it before you scroll to it:
+
+<img src="screenshots/phone.png" alt="QR Generator on a phone, with the live code above the keyboard" width="300">
+
 QR Generator turns a link, a short text, a WiFi network, a contact card, an email, a phone number or an SMS into a square that a phone can read. It runs entirely in the browser: no server, no account, no analytics, and nothing you type leaves the tab.
 
 The point is what it does **not** do. Most free generators hand you a code that lives on their server, which is why it stops working after a trial, why the download asks for an account, and why a printed leaflet dies the day someone cancels a subscription. A code made here is the data itself, drawn by your own browser, so there is nothing behind it that can be switched off.
