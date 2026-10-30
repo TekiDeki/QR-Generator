@@ -394,6 +394,13 @@ select {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
 }
+
+
+
+  /* regula casei: tinte de atingere pe mobil */
+  @media (pointer: coarse), (max-width: 700px) {
+    .swatch { min-height: 34px; display: inline-flex; align-items: center; }
+  }
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"WebApplication","name":"QR Generator","applicationCategory":"UtilitiesApplication","operatingSystem":"Any (web browser)","url":"https://tekideki.github.io/QR-Generator/","description":"Creator of permanent QR codes for links, text, WiFi, contacts, email, phone and SMS, with SVG and PNG export and a printable A4 sheet. Nothing is uploaded.","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"author":{"@type":"Person","name":"Kristian Mario Miskovic","alternateName":"TekiDeki"},"license":"https://www.apache.org/licenses/LICENSE-2.0","isAccessibleForFree":true}
