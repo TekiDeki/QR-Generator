@@ -615,16 +615,37 @@
     return payloadApi.label(stateFor) || '';
   }
 
-  function a4Sheet(lines, columns, withCaption) {
+  /* One layout calculation drives the preview, the capacity note and the
+   * printed page. Keeping these together prevents the note from promising
+   * more codes than the A4 page can actually hold. */
+  function sheetLayout(columns, withCaption) {
     var pageW = 210;
     var pageH = 297;
     var margin = 12;
     var gap = 6;
     var cellW = (pageW - margin * 2 - gap * (columns - 1)) / columns;
-    var rowsPerPage = 1;
     var codeSize = Math.min(cellW - 4, 46);
     var cellH = codeSize + (withCaption ? 12 : 6);
-    rowsPerPage = Math.max(1, Math.floor((pageH - margin * 2) / (cellH + gap)));
+    var rowsPerPage = Math.max(1, Math.floor((pageH - margin * 2) / (cellH + gap)));
+    return {
+      margin: margin,
+      gap: gap,
+      cellW: cellW,
+      codeSize: codeSize,
+      cellH: cellH,
+      rowsPerPage: rowsPerPage,
+      perPage: columns * rowsPerPage
+    };
+  }
+
+  function a4Sheet(lines, columns, withCaption) {
+    var layout = sheetLayout(columns, withCaption);
+    var margin = layout.margin;
+    var gap = layout.gap;
+    var cellW = layout.cellW;
+    var codeSize = layout.codeSize;
+    var cellH = layout.cellH;
+    var rowsPerPage = layout.rowsPerPage;
 
     var parts = [];
     parts.push('<svg xmlns="http://www.w3.org/2000/svg" width="210mm" height="297mm" viewBox="0 0 210 297">');
@@ -696,7 +717,7 @@
       return;
     }
     var columns = parseInt(state.columns, 10) || 3;
-    var perPage = columns * 8;
+    var perPage = sheetLayout(columns, state.sheetCaption).perPage;
     el.sheetFrame.hidden = false;
     el.sheetPreview.innerHTML = a4Sheet(items.slice(0, perPage), columns, state.sheetCaption);
     if (items.length > perPage) {
@@ -712,7 +733,8 @@
     var items = sheetItems();
     if (!items.length) { toast(t('sheetEmpty')); return; }
     var columns = parseInt(state.columns, 10) || 3;
-    el.printArea.innerHTML = a4Sheet(items.slice(0, columns * 8), columns, state.sheetCaption);
+    var perPage = sheetLayout(columns, state.sheetCaption).perPage;
+    el.printArea.innerHTML = a4Sheet(items.slice(0, perPage), columns, state.sheetCaption);
     toast(t('toastSheet'));
     window.print();
   }

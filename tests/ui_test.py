@@ -143,6 +143,24 @@ def run_checks(page, base: str, console_errors: list[str], page_errors: list[str
     payload = page.evaluate("() => document.getElementById('payloadText').textContent")
     check("S:Cafe\\;Bar;" in payload, f"a hostile network name is escaped, got {payload!r}")
 
+    # The email builder must read the same mailBody key as the interface state.
+    page.click('.chip[data-type="email"]')
+    page.fill("#subject", "Hello world")
+    page.fill("#mailBody", "Line one")
+    page.wait_for_timeout(150)
+    payload = page.locator("#payloadText").inner_text()
+    check("subject=Hello%20world&body=Line%20one" in payload,
+          f"the email subject and message both reach the payload, got {payload!r}")
+
+    # The vCard builder must use the contactPhone and contactEmail state keys.
+    page.click('.chip[data-type="contact"]')
+    page.fill("#contactPhone", "+381 60 123 4567")
+    page.fill("#contactEmail", "ana@example.com")
+    page.wait_for_timeout(150)
+    payload = page.locator("#payloadText").inner_text()
+    check("TEL;TYPE=CELL:+381601234567" in payload and "EMAIL:ana@example.com" in payload,
+          f"the contact phone and email both reach the vCard, got {payload!r}")
+
     # 7. undo brings the previous state back
     page.click('.chip[data-type="url"]')
     page.wait_for_timeout(80)
@@ -204,9 +222,20 @@ def run_checks(page, base: str, console_errors: list[str], page_errors: list[str
     captions = page.locator("#printArea text").count()
     check(captions == 3, f"each code has a caption, got {captions}")
 
+    # A full page must use the same capacity in the preview, note and print.
+    page.fill("#batchList", "\n".join(f"example.com/item-{i}" for i in range(25)))
+    page.wait_for_timeout(450)
+    check(page.locator("#sheetPreview g").count() == 12, "three columns fit twelve captioned codes on A4")
+    check("holds 12 codes" in page.locator("#sheetMore").inner_text(),
+          "the capacity note uses the real A4 layout")
+    page.click("#sheetBtn")
+    page.wait_for_timeout(350)
+    check(page.locator("#printArea g").count() == 12, "printing keeps all twelve codes from the preview")
+
     # 9b. the small code on a phone, while the full preview is far below
     page.set_viewport_size({"width": 390, "height": 844})
     page.wait_for_timeout(250)
+    check(page.locator("#logoRemove").is_hidden(), "a hidden logo button stays hidden on a phone")
     page.click('.chip[data-type="url"]')
     page.fill("#url", "")
     page.wait_for_timeout(200)

@@ -91,8 +91,8 @@ const card = Q.build({
   firstName: 'Kristian',
   lastName: 'Miskovic',
   org: 'TekiDeki',
-  phone: '+381 60 123 4567',
-  email: 'a@b.c',
+  contactPhone: '+381 60 123 4567',
+  contactEmail: 'a@b.c',
   website: 'freehtml.dev'
 });
 ok(card.startsWith('BEGIN:VCARD\r\nVERSION:3.0\r\n'), 'a contact starts with the vCard header');
@@ -109,7 +109,7 @@ eq(Q.build({ type: 'contact', firstName: '', lastName: '' }), '', 'a contact wit
 
 eq(Q.build({ type: 'email', mailTo: 'a@b.c' }), 'mailto:a@b.c', 'an email with nothing else');
 eq(
-  Q.build({ type: 'email', mailTo: 'a@b.c', subject: 'Hi there', body: 'line one' }),
+  Q.build({ type: 'email', mailTo: 'a@b.c', subject: 'Hi there', mailBody: 'line one' }),
   'mailto:a@b.c?subject=Hi%20there&body=line%20one',
   'subject and body are encoded'
 );

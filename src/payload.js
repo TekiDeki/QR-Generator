@@ -81,8 +81,8 @@
     lines.push('N:' + escapeVcard(last) + ';' + escapeVcard(first) + ';;;');
     lines.push('FN:' + escapeVcard((first + ' ' + last).trim()));
     if (state.org) lines.push('ORG:' + escapeVcard(state.org));
-    if (state.phone) lines.push('TEL;TYPE=CELL:' + escapeVcard(normalizePhone(state.phone)));
-    if (state.email) lines.push('EMAIL:' + escapeVcard(state.email));
+    if (state.contactPhone) lines.push('TEL;TYPE=CELL:' + escapeVcard(normalizePhone(state.contactPhone)));
+    if (state.contactEmail) lines.push('EMAIL:' + escapeVcard(state.contactEmail));
     if (state.website) lines.push('URL:' + escapeVcard(normalizeUrl(state.website)));
     lines.push('END:VCARD');
     return lines.join('\r\n');
@@ -93,7 +93,7 @@
     if (!to) return '';
     var query = [];
     if (state.subject) query.push('subject=' + encodeURIComponent(state.subject));
-    if (state.body) query.push('body=' + encodeURIComponent(state.body));
+    if (state.mailBody) query.push('body=' + encodeURIComponent(state.mailBody));
     return 'mailto:' + to + (query.length ? '?' + query.join('&') : '');
   }
 

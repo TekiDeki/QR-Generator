@@ -5,7 +5,7 @@
  * The payload is built and the code is drawn in the tab, so this worker only
  * keeps the app shell. Bump VERSION whenever index.html changes.
  */
-var VERSION = '1';
+var VERSION = '2';
 var CACHE = 'qr-generator-v' + VERSION;
 var ASSETS = [
   './',

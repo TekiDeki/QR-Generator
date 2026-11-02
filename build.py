@@ -26,6 +26,7 @@ QR_JS = SRC / "qr.js"
 PAYLOAD_JS = SRC / "payload.js"
 APP_JS = SRC / "app.js"
 LOCALES = SRC / "i18n" / "locales.json"
+INSTALL = SRC / "install.html"
 OUT = ROOT / "index.html"
 VERSION_FILE = ROOT / "VERSION"
 
@@ -236,7 +237,9 @@ def build() -> str:
         html = html.replace(src, "<script>\n" + body.rstrip() + "\n</script>", 1)
 
     html = html.replace('<html lang="en">', '<html lang="en" data-version="' + version + '">', 1)
-    html = html.replace("</body>", "<!-- QR Generator " + version + " · single file build -->\n</body>", 1)
+    install = read(INSTALL).rstrip() + "\n\n"
+    check_text("install.html", install)
+    html = html.replace("</body>", "<!-- QR Generator " + version + " · single file build -->\n" + install + "</body>", 1)
 
     check_text("index.html", html)
     if '<link rel="stylesheet"' in html or re.search(r'<script src="(?!https://)', html):
